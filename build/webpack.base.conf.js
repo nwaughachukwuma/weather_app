@@ -1,9 +1,7 @@
-'use strict'
-
-const path = require('path')
-const utils = require('./utils')
-const config = require('../config')
-const vueLoaderConfig = require('./vue-loader.conf')
+var path = require('path')
+var utils = require('./utils')
+var config = require('../config')
+var vueLoaderConfig = require('./vue-loader.conf')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -23,25 +21,18 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
-      {{#if_eq build "standalone"}}
       'vue$': 'vue/dist/vue.esm.js',
-      {{/if_eq}}
       '@': resolve('src')
     }
   },
   module: {
-    rules: [
-      {{#lint}}
+    loaders: [
       {
-        test: /\.(js|vue)$/,
-        loader: 'eslint-loader',
-        enforce: 'pre',
-        include: [resolve('src'), resolve('test')],
-        options: {
-          formatter: require('eslint-friendly-formatter')
-        }
-      },
-      {{/lint}}
+        test: /\.js$/,
+        loader: 'ify-loader'
+      }
+    ],
+    rules: [
       {
         test: /\.vue$/,
         loader: 'vue-loader',
@@ -75,7 +66,19 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      }
+      },
+      {
+        test: /\.(scss|sass)$/,
+        use: [{ loader: "css-loader" }, { loader: "sass-loader" }]
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
+      },
+      {
+        test: /\.less$/,
+        use: [{loader: "css-loader"}, {loader: "less-loader"}] // translates CSS into CommonJS
+      },
     ]
   }
 }
