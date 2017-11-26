@@ -113,8 +113,7 @@
   @import "../node_modules/vuetify/dist/vuetify.min.css";
   @import "../public/keen.io/css/keen-static.css";
   @import "../public/keen.io/css/keen-dashboards.css";
-  @import "./assets/css/styles.css";
-  
+  @import "./assets/css/styles.css";  
 </style>
 
 
