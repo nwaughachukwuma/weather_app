@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer permanent v-model="drawer" enable-resize-watcher app :mini-variant.sync="mini">
+    <v-navigation-drawer persistent v-model="drawer" enable-resize-watcher app :mini-variant.sync="mini">
       <v-list dense>
 
         <v-list-tile to="/">
@@ -48,6 +48,7 @@
     </main>
     <v-footer color="indigo" class="pa-3" app>        
       <div class="">
+        <v-spacer></v-spacer>
         <span class="white--text">Built with <label style="color:red;">&#9829;</label> by <a href="https://ng.linkedin.com/in/cpnwaugha">Chukwuma Nwaugha</a>
         <v-spacer></v-spacer>
           <div>&copy; {{ new Date().getFullYear() }}</div>

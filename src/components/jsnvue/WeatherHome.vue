@@ -38,6 +38,9 @@ export default {
   margin-left: 60px;
   margin-right: -50px;
 }
+.btn-primary{
+  background-color:#2388CB !important;
+}
 </style>
 
 
