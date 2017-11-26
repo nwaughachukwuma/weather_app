@@ -27,12 +27,17 @@ export default {
   .input-group{
     width: 50%;
   }
-  .text-xs-center{
+  form .text-xs-center{
     margin: 0 auto;
   }
   .text-xs-right{
     margin-left: 100px;
   }
+  .layout.text-xs-center.row.wrap{
+    color: red!important;
+  margin-left: 60px;
+  margin-right: -50px;
+}
 </style>
 
 

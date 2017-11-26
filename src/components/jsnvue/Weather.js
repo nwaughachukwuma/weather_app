@@ -23,37 +23,45 @@ export default {
     </form>
     <br/>
     <v-layout>
-      <v-flex xs12 sm6 offset-sm3>
-        <v-card>
+        <v-flex xs12 sm6 offset-sm3>
+            <v-card>
+                <v-card-title primary-title class="text-xs-center">
+                    <h4><label class="bg-primary">{{date}}</label></h4>
+                </v-card-title primary-title>
+            </v-card mb-2>
+        </v-flex>
+    </v-layout>
+    <v-layout>
+    <v-container class="text-xs-center" xs12 sm6 offset-sm3>
+        <v-layout row wrap class="text-xs-center">
+        <v-flex v-for="(city, i) in homeCitiesData" :key="i" xs10 sm9 md5 ma-1 offset-sm3>
+            <v-card>
             <v-card-title primary-title>
-                <label class="bg-info">{{date}}</label>
-            </v-card-title primary-title>
-        </v-card mb-2>
-        <v-card>
-          <v-card-title primary-title>
-            <div>
-                <span><h3 class="headline mb-0">{{cityName}}</h3></span>
                 <div>
-                    <span>
-                        <label>Weather State: {{weatherStateName}}</label>
-                        <br/><label>Wind Direction: {{windDirection}}</label>
-                    </span>
+                    <span><h3 class="headline mb-0">{{city.cityName}}</h3></span>
+                    <div>
+                        <span>
+                            <label>Weather State: {{city.weatherStateName}}</label>
+                            <br/><label>Wind Direction: {{city.windDirection}}</label>
+                        </span>
+                    </div>
                 </div>
-            </div>
-            <div class="pull-right text-xs-right">
-                <img class="pull-right" ref="images" alt="weatherIcon">
-            </div>
-          </v-card-title>
-          <v-card-text>
-            Temperature in Celcius Scale
-          </v-card-text>
-          <v-card-actions>
-            <v-btn flat color="orange">Min Temp: {{minTemp}}</v-btn>
-            <v-btn flat color="orange">current Temp: {{curTemp}}</v-btn>
-            <v-btn flat color="orange">max Temp: {{maxTemp}}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
+                <div class="pull-right text-xs-right">
+                    <img class="pull-right" ref="images" alt="weatherIcon">
+                </div>
+            </v-card-title>
+            <v-card-text>
+                Temperature in Celcius Scale
+            </v-card-text>
+            <v-card-actions>
+                <v-btn flat color="blue">Min Temp: {{city.minTemp}}</v-btn>
+                <v-btn flat color="orange">current Temp: {{city.curTemp}}</v-btn>
+                <v-btn flat color="red">max Temp: {{city.maxTemp}}</v-btn>
+            </v-card-actions>
+            </v-card>
+        </v-flex>
+        </v-layout>
+      </v-container>
     </v-layout>
   </div>
   `,
@@ -64,19 +72,20 @@ export default {
             api: "http://localhost/weather.php/?command=location&woeid=london",
             apiUrl: "https://www.metaweather.com/api/location/",
             apiUrlBase: "https://www.metaweather.com/",
-            appname: "App",
-            cityName: "",
-            curTemp: "",
-            maxTemp: "",
-            minTemp: "",
-            weatherIcon: "",
-            weatherStateName: "",
-            windDirection: "",
+            homeCities: ["istanbul", "berlin", "london", "helsinki", "dublin", "vancouver"],
+            homeCitiesWithWoeid: [],// "istanbul": null, "berlin": null, "london": null, "helsinki": null, "dublin": null, "vancouver": null  },
+            cityDataLS: JSON.parse(this.$ls.get('cityData')), // city data in local storage
+            homeCitiesData : [
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "" ,weatherStateName: "", windDirection: "" },
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "", weatherStateName: "", windDirection: "" },
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "", weatherStateName: "", windDirection: "" },
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "", weatherStateName: "", windDirection: "" },
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "", weatherStateName: "", windDirection: "" },
+                { cityName: "", curTemp: "", minTemp: "", maxTemp: "", weatherIcon: "", weatherStateName: "", windDirection: "" },
+            ],
             date: null,
             locations: {},
             title: null,
-            location_type: null,
-            woeid: null,
             latt_long: null,
             timezone: null,
             consolidated_weather: {},
@@ -88,50 +97,72 @@ export default {
     },
     methods: {
 
-        getLocationWeatherDetails(){
-            HTTP.get('?command=location&woeid=44418').then(response => {
-                this.locations['44418'] = response.data
-                this.renderWeatherInfo();
-            });            
+        getHomeCitiesWeatherDetails(){
+            var that = this;
+            //this.homeCitiesWithWoeid = JSON.parse(JSON.stringify(this.homeCitiesWithWoeid));
+            // console.log(Object.keys(this.homeCitiesWithWoeid).length)
+
+            // HTTP.get('?command=location&woeid=44418').then(response => {
+            //     this.locations['44418'] = response.data
+            //     this.renderWeatherInfo();
+            // });            
             
         },
-        renderWeatherInfo(){
-            this.cityName = this.locations['44418'].parent.title;
-            this.cityName = this.locations['44418'].title;
-            this.location_type = this.locations['44418'].location_type;
-            this.woeid = this.locations['44418'].woeid;
-            this.timezone = this.locations['44418'].timezone;             
-            this.consolidated_weather = this.locations['44418'].consolidated_weather['0'];
+        renderWeatherInfo(woeid, index){
+
+            this.homeCitiesData[index].cityName = this.locations[woeid].title;
+
+            var cityName = this.locations[woeid].title;
+           
+            var consolidated_weather = this.locations[woeid].consolidated_weather['0'];
             
-            this.minTemp = parseInt(this.consolidated_weather.min_temp);
-            this.maxTemp = parseInt(this.consolidated_weather.max_temp);
-            this.curTemp = parseInt(this.consolidated_weather.the_temp);
-            var date = this.consolidated_weather.created;
-            var day = this.days[new Date(date).getDay()];
-            var month = this.months[new Date(date).getMonth()];            
-            var year = new Date(date).getFullYear();
-            var curdate = new Date(date).getDate();
-            this.date = day + ', ' + month + ' ' + curdate + ', ' + year;
-            console.log(this.date);
+            this.homeCitiesData[index].minTemp = parseInt(consolidated_weather.min_temp);
+            this.homeCitiesData[index].maxTemp = parseInt(consolidated_weather.max_temp);
+            this.homeCitiesData[index].curTemp = parseInt(consolidated_weather.the_temp);
 
-            var weatherIcon = this.consolidated_weather.weather_state_abbr;
-            var weatherIconURL =  this.apiUrlBase + 'static/img/weather/ico/' + weatherIcon + '.ico';
-            this.weatherIcon = weatherIconURL;
+            if (index === 0){
+                var date = consolidated_weather.created;
+                var day = this.days[new Date(date).getDay()];
+                var month = this.months[new Date(date).getMonth()];            
+                var year = new Date(date).getFullYear();
+                var curdate = new Date(date).getDate();
+    
+                this.date = day + ', ' + month + ' ' + curdate + ', ' + year;
+            }
+            
+            var weatherStateAbbr = consolidated_weather.weather_state_abbr;
+            var weatherIconURL =  this.apiUrlBase + 'static/img/weather/ico/' + weatherStateAbbr + '.ico';
+            this.homeCitiesData[index].weatherIcon = weatherIconURL;
 
-            this.$refs.images.src = this.weatherIcon;
-
-            this.weatherStateName = this.consolidated_weather.weather_state_name;
-            this.windDirection = this.consolidated_weather.wind_direction_compass;
+            this.$refs.images[index].src = weatherIconURL;// this.homeCitiesData[index].weatherIcon;
+            
+            this.homeCitiesData[index].weatherStateName = consolidated_weather.weather_state_name;
+            this.homeCitiesData[index].windDirection = consolidated_weather.wind_direction_compass;
         },        
-        computeNewName(){
-            this.appname = "Weather App";
+        computeHomeCityWoeids(){
+            var that = this;   
+            var temp = []; 
+            this.homeCities.map((val, index) => {
+                // Get for the woeid of the six cities on the home page
+                HTTP.get('?command=search&keyword='+ val).then(response => {  
+                    var woeid = response.data[0].woeid;
+                    // Get their location data and render the weather to screen
+                    HTTP.get('?command=location&woeid='+ woeid).then(response => {
+                        this.locations[woeid] = response.data;
+                        this.renderWeatherInfo(woeid, index);
+                    });          
+                });
+            })          
+        },       
+        findWoeid(queryParam){
+
         },
         submit(){
             console.log('Search submitted');
         },
     },
     mounted(){
-        this.computeNewName();
-        this.getLocationWeatherDetails();
+        this.computeHomeCityWoeids();
+        this.getHomeCitiesWeatherDetails();
     }
 }
