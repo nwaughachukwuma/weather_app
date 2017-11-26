@@ -12,7 +12,7 @@ export default {
                 class="text-xs-center"
                 prepend-icon="search"
                 v-model="searchText" 
-                v-on:keyup.enter="submit"
+                v-on:keyup.enter="searchLocation(searchText)"
                 placeholder="Enter a location to search ..."
                 :counter="20"
                 solo
@@ -26,7 +26,7 @@ export default {
     <v-container class="text-xs-center" xs12 sm6 offset-sm3>
         <v-layout row wrap class="text-xs-center">
         <v-flex v-for="(city, i) in homeCitiesData" :key="i" xs10 sm9 md5 ma-1 offset-sm3>
-            <v-card @click="showMoreDetails">
+            <v-card>
             <v-card-title primary-title>
                 <div>
                     <span><h3 class="headline mb-0">{{city.cityName}}</h3></span>
@@ -132,7 +132,7 @@ export default {
         computeHomeCityWoeids(){
             var that = this;   
             var temp = []; 
-            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            // var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
 
             this.homeCities.map((val, index) => {
                 // Get for the woeid of the six cities on the home page
@@ -140,15 +140,15 @@ export default {
                 // mechanism to test that network is slow
                 // use saved woeid data: this.cityDataLS
                 // Check for browser support: When the internet is poor. To improve performance
-                console.log(connection.downlink);
-                if (connection && connection.downlink < 2.05) {
-                   this.cityDataLS.map((woeidval, ind)=>{
-                    HTTP.get('?command=location&woeid='+ woeidval).then(response => {
-                        this.locations[woeid] = response.data;
-                        this.renderWeatherInfo(woeid, index);
-                    }); 
-                   })
-                }else{
+                // console.log(connection.downlink);
+                // if (connection && connection.downlink < 2.05) {
+                //    this.cityDataLS.map((woeidval, ind)=>{
+                //     HTTP.get('?command=location&woeid='+ woeidval).then(response => {
+                //         this.locations[woeidval] = response.data;
+                //         this.renderWeatherInfo(woeidval, index);
+                //     }); 
+                //    })
+                // }else{
                     HTTP.get('?command=search&keyword='+ val).then(response => {  
                         var woeid = response.data[0].woeid;
                         // Get their location data and render the weather to screen
@@ -157,19 +157,20 @@ export default {
                             this.renderWeatherInfo(woeid, index);
                         });          
                     });
-                }                                    
+                //}                                    
             })          
         },       
         findWoeid(queryParam){
 
         },
-        submit(){
-            console.log('Search submitted');
+        searchLocation(query){
+            this.$router.push({ path: `/search/${query}` });
+            //console.log('Search submitted', query);
         },
-        showMoreDetails(e, index, woeid){
-            //this.$refs.routowoeid[index].to = '/weather/'+woeid;
-            console.log("Clicked to Show more details", this.$refs.routowoeid[index]);
-        }
+        // showMoreDetails(e, index, woeid){
+        //     //this.$refs.routowoeid[index].to = '/weather/'+woeid;
+        //     console.log("Clicked to Show more details", this.$refs.routowoeid[index]);
+        // }
     },
     mounted(){
         this.computeTodaysDate();

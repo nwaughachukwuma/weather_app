@@ -69,12 +69,12 @@
         drawer: true,
         items: [
           {
-            action: 'settings',
-            title: 'Settings',
-            active: true,
-            items: [
-              { title: 'Admin', route: '/admin' },                           
-            ]
+            // action: 'settings',
+            // title: 'Settings',
+            // active: true,
+            // items: [
+            //   { title: 'Admin', route: '/admin' },                           
+            // ]
           },
           // {
           //   action: 'bubble_chart',

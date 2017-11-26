@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import WeatherHome from '@/components/jsnvue/WeatherHome'
 import Settings from '@/components/jsnvue/Settings'
 import WeatherInfo from '@/components/jsnvue/WeatherInfo'
+import WeatherSearch from '@/components/jsnvue/WeatherSearch'
 
 
 Vue.use(Router)
@@ -23,6 +24,12 @@ export default new Router({
       path: '/weather/:woeid',
       name: 'WeatherInfo',
       component: WeatherInfo,
+      props: true
+    },
+    {
+      path: '/search/:query',
+      name: 'WeatherSearch',
+      component: WeatherSearch,
       props: true
     },
   ]
